@@ -221,12 +221,17 @@ test('isPresetWorkflows: 仅当映射恰好等于某模式预设时为真（前�
   assert.equal(isPresetWorkflows(null), false);
 });
 
-test('comfyBaseUrl: native 返回原地址，runninghub 返回固定域名', () => {
+test('comfyBaseUrl: native 返回原地址，runninghub 返回固定域名，api 不显示本机地址', () => {
   assert.equal(comfyBaseUrl({ comfyui: { provider: 'native', baseUrl: 'http://127.0.0.1:8188' } }), 'http://127.0.0.1:8188');
   assert.equal(comfyBaseUrl({ comfyui: { provider: 'runninghub', apiKey: 'abc123', tier: 'standard' } }), 'https://www.runninghub.cn');
   assert.equal(comfyBaseUrl({ comfyui: { provider: 'runninghub', apiKey: 'abc123', tier: 'plus' } }), 'https://www.runninghub.cn');
   assert.equal(comfyBaseUrl({ comfyui: { provider: 'runninghub', apiKey: '', tier: 'standard' } }), 'https://www.runninghub.cn');
   assert.equal(comfyBaseUrl(null), 'http://127.0.0.1:8188');
+  // api 模式下 baseUrl 里残留的是本机地址，展示出来会让人误以为还在连本机显卡
+  const apiShown = comfyBaseUrl({ comfyui: { provider: 'api', baseUrl: 'http://127.0.0.1:8188' } });
+  assert.ok(!apiShown.includes('8188'), '云端模式不该显示本机端口，实际：' + apiShown);
+  assert.match(apiShown, /云端/);
+  assert.ok(!maskComfyBaseUrl({ comfyui: { provider: 'api', baseUrl: 'http://127.0.0.1:8188' } }).includes('8188'));
 });
 
 test('maskComfyBaseUrl: RunningHub 脱敏 apiKey，native 原样返回', () => {

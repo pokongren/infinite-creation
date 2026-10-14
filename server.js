@@ -93,7 +93,7 @@ app.prepare().then(() => {
   const port = process.env.PORT || cfg.server.port || 4600;
   server.listen(port, () => {
     console.log('infinite-creation 已启动: http://127.0.0.1:' + port + (dev ? '（开发模式）' : ''));
-    console.log('  ComfyUI: ' + maskComfyBaseUrl(cfg));
+    console.log('  渲染后端: ' + maskComfyBaseUrl(cfg));
     console.log('  LLM:     ' + cfg.llm.baseUrl + ' (' + cfg.llm.model + ')');
   });
 });
