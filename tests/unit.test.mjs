@@ -839,7 +839,7 @@ test('inferVoiceBaseline: 推断不出性别（中性/冲突）返回空串，�
 
 // —— 云端商业 API 适配层（OpenAI 兼容生图/视频 + 小米 MiMo 配音）——
 const {
-  isCloudApi, cloudGenerate, cloudCheck, cloudLocalRef, cloudDownload,
+  isCloudApi, cloudGenerate, cloudCheck, cloudLocalRef, cloudDownload, listModels,
   outItem, abortedError, readMediaBase64, saveTempMedia, tolerantPick,
   sizeForImageApi, withRetry,
 } = await import('../lib/core/cloud-api.js');
@@ -1270,23 +1270,64 @@ test('cloudGenerate: 未配置的任务类型直接报错，不静默返回空�
   await assert.rejects(cloudGenerate(imgCfg(), { kind: 'unknown_kind' }, {}), /不支持的云端任务类型/);
 });
 
-test('cloudCheck: 三套密钥缺任一项都点名缺哪个，配齐才 ok', async () => {
-  const full = { mediaApi: { image: { apiKey: 'ik' }, video: { apiKey: 'vk' }, tts: { apiKey: 'tk' } } };
-  const okR = await cloudCheck(full);
-  assert.equal(okR.ok, true);
-  const noImg = await cloudCheck({ mediaApi: { video: { apiKey: 'vk' }, tts: { apiKey: 'tk' } } });
-  assert.equal(noImg.ok, false);
-  assert.match(noImg.error, /mediaApi\.image\.apiKey/, '应点名生图密钥，实际：' + noImg.error);
-  const noVideo = await cloudCheck({ mediaApi: { image: { apiKey: 'ik' }, tts: { apiKey: 'tk' } } });
-  assert.match(noVideo.error, /mediaApi\.video\.apiKey/);
-  const noTts = await cloudCheck({ mediaApi: { image: { apiKey: 'ik' }, video: { apiKey: 'vk' } } });
-  assert.match(noTts.error, /mediaApi\.tts\.apiKey/);
-  const none = await cloudCheck({});
-  assert.equal(none.ok, false);
-  assert.match(none.error, /mediaApi\.image\.apiKey/);
-  assert.match(none.error, /mediaApi\.video\.apiKey/);
-  assert.match(none.error, /mediaApi\.tts\.apiKey/);
-  assert.match(none.error, /密钥未配齐/, '报错要说人话，用户才知道去哪儿填');
+test('cloudCheck: 真去各档拉模型清单，任何一段连不上都不算连接成功', async () => {
+  const full = {
+    mediaApi: {
+      image: { baseUrl: 'https://img.test/v1', apiKey: 'ik' },
+      video: { baseUrl: 'https://vid.test/v1', apiKey: 'vk' },
+      tts: { baseUrl: 'https://tts.test/v1', apiKey: 'tk' },
+    },
+  };
+  const m = mockFetch(async (rec) => {
+    if (rec.url.startsWith('https://vid.test')) return jsonRes({ error: 'bad key' }, 401);
+    return jsonRes({ data: [{ id: 'a' }, { id: 'b' }] });
+  });
+  try {
+    const r = await cloudCheck(full);
+    assert.equal(r.ok, false, 'Key 被拒的那段还在，就不能报成功');
+    assert.match(r.error, /1 段连不上/);
+    const byId = Object.fromEntries(r.groups.map((g) => [g.id, g]));
+    assert.equal(byId.image.state, 'ok');
+    assert.equal(byId.image.text, '2 个模型');
+    assert.equal(byId.video.state, 'fail');
+    assert.match(byId.video.text, /Key 不对或被拒/, '厂商报错要翻成大白话');
+    assert.equal(m.calls.length, 3, '三段各拉一次');
+    assert.equal(m.calls[0].headers.Authorization, 'Bearer ik');
+  } finally { m.restore(); }
+});
+
+test('cloudCheck: 三段都没填时提示去填，一个请求都不发', async () => {
+  const m = mockFetch(async () => jsonRes({ data: [] }));
+  try {
+    const r = await cloudCheck({});
+    assert.equal(r.ok, false);
+    assert.match(r.error, /都没填/, '要说人话，用户才知道去哪儿填');
+    assert.equal(m.calls.length, 0);
+    const half = await cloudCheck({ mediaApi: { image: { baseUrl: 'https://img.test/v1', apiKey: 'ik' } } });
+    assert.equal(half.ok, true, '只填了一段也算连上');
+    assert.equal(half.groups.find((g) => g.id === 'video').text, '未填写');
+  } finally { m.restore(); }
+});
+
+test('listModels: 各档取自己的 baseUrl/Key，data[] 与 models[] 两种返回形状都认', async () => {
+  const m = mockFetch(async (rec) => (
+    rec.url.startsWith('https://tts.test')
+      ? jsonRes({ models: ['mimo-v2.6-pro', 'mimo-v2.5-tts'] })
+      : jsonRes({ data: [{ id: 'gpt-image-2-1k' }, { id: 'gpt-image-2-4k' }] })
+  ));
+  try {
+    const cfg = {
+      mediaApi: {
+        image: { baseUrl: 'https://img.test/v1/', apiKey: 'ik' },
+        tts: { baseUrl: 'https://tts.test/v1', apiKey: 'tk' },
+      },
+    };
+    assert.deepEqual(await listModels(cfg, 'image'), ['gpt-image-2-1k', 'gpt-image-2-4k']);
+    assert.deepEqual(await listModels(cfg, 'tts'), ['mimo-v2.6-pro', 'mimo-v2.5-tts']);
+    assert.equal(m.calls[0].url, 'https://img.test/v1/models', 'baseUrl 尾部斜杠要去重，别拼成 //models');
+    await assert.rejects(listModels(cfg, 'video'), /还没填 Base URL/);
+    await assert.rejects(listModels({ mediaApi: { image: { baseUrl: 'https://img.test/v1' } } }, 'image'), /还没填 API Key/);
+  } finally { m.restore(); }
 });
 
 test('cloudLocalRef: api 模式不上传，原样返回本地绝对路径', () => {

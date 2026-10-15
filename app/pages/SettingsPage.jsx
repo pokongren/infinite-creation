@@ -5,6 +5,7 @@ import { api } from '../api-client.js';
 import { useToast } from '../toast';
 import { HW_PRESETS, HW_DEFAULT_FREE, hardwareMode, isPresetWorkflows, comfyBaseUrl, RUNNINGHUB_TIERS } from '../../lib/shared/index.js';
 import { selectKeys, pickKey } from './shared';
+import ModelPicker from './ModelPicker';
 import SkillsTab from './SkillsTab';
 import WorkflowsTab from './WorkflowsTab';
 
@@ -108,11 +109,16 @@ export default function SettingsPage({ onBack }) {
 
             <h4 className="text-sm font-semibold" style={{ marginTop: 8 }}>生图 · OpenAI 兼容</h4>
             <Input size="sm" className="mt-2" placeholder="API Key" type="password" value={cfg.mediaApi?.image?.apiKey || ''} onChange={(e) => setMedia('image', { apiKey: e.target.value })} />
-            <div className="row mt-2" style={{ gap: 8, alignItems: 'center' }}>
-              <span style={{ flex: 'none' }}>模型</span>
-              <Input size="sm" className="w-64" placeholder="gpt-image-2.5" value={cfg.mediaApi?.image?.model || ''} onChange={(e) => setMedia('image', { model: e.target.value })} />
-              <span className="muted">默认 gpt-image-2.5</span>
-            </div>
+            <ModelPicker
+              group="image"
+              baseUrl={cfg.mediaApi?.image?.baseUrl}
+              apiKey={cfg.mediaApi?.image?.apiKey}
+              value={cfg.mediaApi?.image?.model || ''}
+              onChange={(v) => setMedia('image', { model: v })}
+              placeholder="gpt-image-2.5"
+              hint="默认 gpt-image-2.5"
+              className="row mt-2"
+            />
             <div className="row mt-2" style={{ gap: 8, alignItems: 'center' }}>
               <span style={{ flex: 'none' }}>Base URL</span>
               <Input size="sm" className="flex-1 min-w-0" value={cfg.mediaApi?.image?.baseUrl || ''} onChange={(e) => setMedia('image', { baseUrl: e.target.value })} />
@@ -121,11 +127,16 @@ export default function SettingsPage({ onBack }) {
 
             <h4 className="text-sm font-semibold" style={{ marginTop: 8 }}>视频 · OpenAI 兼容</h4>
             <Input size="sm" className="mt-2" placeholder="API Key" type="password" value={cfg.mediaApi?.video?.apiKey || ''} onChange={(e) => setMedia('video', { apiKey: e.target.value })} />
-            <div className="row mt-2" style={{ gap: 8, alignItems: 'center' }}>
-              <span style={{ flex: 'none' }}>模型</span>
-              <Input size="sm" className="w-64" placeholder="grok-imagine-video-1.5-fast" value={cfg.mediaApi?.video?.model || ''} onChange={(e) => setMedia('video', { model: e.target.value })} />
-              <span className="muted">默认 grok-imagine-video-1.5-fast</span>
-            </div>
+            <ModelPicker
+              group="video"
+              baseUrl={cfg.mediaApi?.video?.baseUrl}
+              apiKey={cfg.mediaApi?.video?.apiKey}
+              value={cfg.mediaApi?.video?.model || ''}
+              onChange={(v) => setMedia('video', { model: v })}
+              placeholder="grok-imagine-video-1.5-fast"
+              hint="默认 grok-imagine-video-1.5-fast"
+              className="row mt-2"
+            />
             <div className="row mt-2" style={{ gap: 8, alignItems: 'center' }}>
               <span style={{ flex: 'none' }}>Base URL</span>
               <Input size="sm" className="flex-1 min-w-0" value={cfg.mediaApi?.video?.baseUrl || ''} onChange={(e) => setMedia('video', { baseUrl: e.target.value })} />
@@ -134,11 +145,16 @@ export default function SettingsPage({ onBack }) {
 
             <h4 className="text-sm font-semibold" style={{ marginTop: 8 }}>配音 · 小米 MiMo</h4>
             <Input size="sm" className="mt-2" placeholder="API Key" type="password" value={cfg.mediaApi?.tts?.apiKey || ''} onChange={(e) => setMedia('tts', { apiKey: e.target.value })} />
-            <div className="row mt-2" style={{ gap: 8, alignItems: 'center' }}>
-              <span style={{ flex: 'none' }}>模型</span>
-              <Input size="sm" className="w-64" placeholder="mimo-v2.5-tts-voicedesign" value={cfg.mediaApi?.tts?.model || ''} onChange={(e) => setMedia('tts', { model: e.target.value })} />
-              <span className="muted">默认 mimo-v2.5-tts-voicedesign</span>
-            </div>
+            <ModelPicker
+              group="tts"
+              baseUrl={cfg.mediaApi?.tts?.baseUrl}
+              apiKey={cfg.mediaApi?.tts?.apiKey}
+              value={cfg.mediaApi?.tts?.model || ''}
+              onChange={(v) => setMedia('tts', { model: v })}
+              placeholder="mimo-v2.5-tts-voicedesign"
+              hint="默认 mimo-v2.5-tts-voicedesign"
+              className="row mt-2"
+            />
             <div className="row mt-2" style={{ gap: 8, alignItems: 'center' }}>
               <span style={{ flex: 'none' }}>Base URL</span>
               <Input size="sm" className="flex-1 min-w-0" value={cfg.mediaApi?.tts?.baseUrl || ''} onChange={(e) => setMedia('tts', { baseUrl: e.target.value })} />
@@ -161,8 +177,17 @@ export default function SettingsPage({ onBack }) {
         <h3 className="text-base font-semibold" style={{ marginTop: 8 }}>LLM（Agent 大脑，OpenAI 兼容）</h3>
         <div className="row">
           <Input size="sm" className="flex-2 min-w-0" placeholder="Base URL（需 /v1 结尾）" value={cfg.llm.baseUrl} onChange={(e) => setCfg({ ...cfg, llm: { ...cfg.llm, baseUrl: e.target.value } })} />
-          <Input size="sm" className="flex-1 min-w-0" placeholder="模型" value={cfg.llm.model} onChange={(e) => setCfg({ ...cfg, llm: { ...cfg.llm, model: e.target.value } })} />
         </div>
+        <ModelPicker
+          group="llm"
+          baseUrl={cfg.llm.baseUrl}
+          apiKey={cfg.llm.apiKey}
+          value={cfg.llm.model || ''}
+          onChange={(v) => setCfg({ ...cfg, llm: { ...cfg.llm, model: v } })}
+          placeholder="模型"
+          className="row mt-2"
+          controlClass="w-64"
+        />
         <Input size="sm" className="mt-2" placeholder="API Key" type="password" value={cfg.llm.apiKey} onChange={(e) => setCfg({ ...cfg, llm: { ...cfg.llm, apiKey: e.target.value } })} />
         <Checkbox size="sm" isSelected={!!cfg.llm.vision} onValueChange={(v) => setCfg({ ...cfg, llm: { ...cfg.llm, vision: v } })}>
           支持图片输入（多模态/视觉模型）
