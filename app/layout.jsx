@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
           {children}
           <footer className="footer">
             <span>项目地址：</span>{' '}
-            <a href="https://github.com/SwotAtmk/infinite-creation" target="_blank" rel="noreferrer">https://github.com/SwotAtmk/infinite-creation</a>
+            <a href="https://github.com/pokongren/infinite-creation" target="_blank" rel="noreferrer">https://github.com/pokongren/infinite-creation</a>
             <span> 开源协议：MIT</span>{' '}
           </footer>
         </Providers>

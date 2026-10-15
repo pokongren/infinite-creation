@@ -9,6 +9,14 @@
 ## 项目简介
  **小说一键生成视频，不限时长，输入小说/剧本通过本地ComfyUI-MiniMaxH3+Agent+Skill技能一键全自动无限生产视频**
 
+## 关于本仓库
+
+本项目基于 [SwotAtmk/infinite-creation](https://github.com/SwotAtmk/infinite-creation) 魔改了一下。
+
+改动重点：**不依赖 ComfyUI，也不依赖 RunningHub** —— 接入第三方云端商业 API（OpenAI 兼容的中转站负责生图与图生视频，小米 MiMo 负责配音与编剧），任何一台能上网的电脑都能直接把整条流程跑起来，不用装显卡、不用自己部署工作流。
+
+原有的 ComfyUI / RunningHub 两条后端都保留着，在「设置 → 渲染服务 / 媒体生成后端」里可以随时切回去。
+
 ## 生成样例
 - 《妈妈的时间》
 <div align="center">
