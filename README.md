@@ -126,17 +126,18 @@ infinite-creation/
 - 打开Trae、豆包、CodeX等工具，打开豆包使用“工作模式”，并输入提示词
 
 ```text
-帮我克隆这个项目https://github.com/SwotAtmk/infinite-creation.git到本地（这里填写要安装的项目目录），
+帮我克隆这个项目https://github.com/pokongren/infinite-creation.git到本地（这里填写要安装的项目目录），
 并且在本地部署启动这个项目。
 ```
 
-- **国内使用：**
+- **国内使用：**（下面是原作者的国内镜像，本仓库未在 gitcode 建镜像；克隆本仓库请用上面的 GitHub 地址）
 ```text
 帮我克隆这个项目https://gitcode.com/SwotAtmk/infinite-creation.git到本地（这里填写要安装的项目目录），
 并且在本地部署启动这个项目。
 ```
 
 **把项目安装为Skill技能**
+（下面这份 `install-skill.md` 挂在原作者的 gitcode 发行版里，本仓库 GitHub 端尚未发布 release 产物）
 ```text
 请根据 https://gitcode.com/SwotAtmk/infinite-creation/releases/download/v1.0.0/install-skill.md，
 从 https://gitcode.com/SwotAtmk/infinite-creation 安装 infinite-creation。
@@ -154,7 +155,7 @@ infinite-creation/
 
 ```bash
 # 克隆项目到本地
-git clone https://github.com/SwotAtmk/infinite-creation.git
+git clone https://github.com/pokongren/infinite-creation.git
 cd infinite-creation
 
 # 1. 安装全部依赖（仅需在根目录执行一次，会自动构建 Agent 内核）

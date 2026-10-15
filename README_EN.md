@@ -8,6 +8,14 @@ English | [中文](README.md)
 
 **Generate videos from novels with one click, unlimited length. Paste a novel/script and let the local ComfyUI-MiniMax H3 + Agent + Skill pipeline automatically produce videos in a fully automated, unlimited-production workflow.**
 
+## About This Repository
+
+This project is a modified fork of [SwotAtmk/infinite-creation](https://github.com/SwotAtmk/infinite-creation).
+
+The main change: **it no longer depends on ComfyUI or RunningHub.** With third-party commercial cloud APIs plugged in (an OpenAI-compatible relay for text-to-image / image-to-video, Xiaomi MiMo for voice-over and screenwriting), the whole pipeline runs on any machine with an internet connection — no GPU setup, no self-hosted workflow.
+
+The original ComfyUI and RunningHub backends are still there; switch back any time under Settings → Render backend.
+
 ## Sample Output
 
 - 《Mom's Time》(妈妈的时间)
@@ -124,11 +132,11 @@ infinite-creation/
 - Open Trae, Doubao, CodeX or similar tools; in Doubao use "Work Mode" and enter the prompt:
 
 ```text
-Help me clone this project https://github.com/SwotAtmk/infinite-creation.git 
+Help me clone this project https://github.com/pokongren/infinite-creation.git 
 locally (fill in the target install directory here), and run it locally.
 ```
 
-- **国内使用：**
+- **国内使用：**（下面是原作者的国内镜像，本仓库未在 gitcode 建镜像；克隆本仓库请用上面的 GitHub 地址）
 ```text
 帮我克隆这个项目https://gitcode.com/SwotAtmk/infinite-creation.git到本地（这里填写要安装的项目目录），
 并且在本地部署运行这个项目
@@ -144,7 +152,7 @@ locally (fill in the target install directory here), and run it locally.
 
 ```bash
 # Clone the project locally
-git clone https://github.com/SwotAtmk/infinite-creation.git
+git clone https://github.com/pokongren/infinite-creation.git
 cd infinite-creation
 
 # 1. Install all dependencies (run once at root; builds the Agent kernel automatically)

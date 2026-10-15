@@ -41,8 +41,8 @@ description: 本地全链路「小说/剧本 → 漫剧/短视频」创作 Agent
 ### 安装 / 配置 / 启动 / 验证
 
 ```bash
-git clone https://github.com/SwotAtmk/infinite-creation.git
-# 国内加速使用：https://gitcode.com/SwotAtmk/infinite-creation.git
+git clone https://github.com/pokongren/infinite-creation.git
+# 国内加速（原作者镜像，本仓库未建 gitcode 镜像）：https://gitcode.com/SwotAtmk/infinite-creation.git
 cd infinite-creation
 pnpm install            # 自动构建 Agent 内核（首次较慢，需 bun）
 pnpm run install:skills # 可选：拉取 MiniMax-H3 官方技能（仓库已含离线快照）
